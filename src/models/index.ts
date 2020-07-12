@@ -1,5 +1,5 @@
 import { Sequelize, Model } from 'sequelize';
-import config from '../../config.json';
+import config from '../config.json';
 export const sequelize = new Sequelize(config.database, config.username, config.password, {
     dialect: 'postgres',
     port: 5432,

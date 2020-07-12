@@ -1,5 +1,5 @@
 {
     "password": "wojownik1234",
-    "database": "HOTEL",
+    "database": "postgres",
     "username": "postgres"
 }
