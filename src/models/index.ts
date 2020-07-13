@@ -4,4 +4,4 @@ export const sequelize = new Sequelize(config.database, config.username, config.
     dialect: 'postgres',
     port: 5432,
 })
-sequelize.sync({ force: true }).then(() => 'Table created')
+sequelize.sync().then(() => 'Table created')

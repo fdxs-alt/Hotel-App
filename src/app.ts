@@ -4,22 +4,20 @@ import helmet from 'helmet'
 import { sequelize } from './models'
 import { User } from './models/User'
 import dotenv from 'dotenv'
+import Auth from './routes/AuthRoutes'
 dotenv.config({ path: './.env' })
 // initializing express app
 const app: express.Application = express()
 
+// sequlize auth
+sequelize
+    .authenticate()
+    .then(() => console.log('Connect to db'))
+    .catch((err) => console.log(err))
 // MIDDLEWARE
 app.use(express.json())
 app.use(cors())
 app.use(helmet())
-
-sequelize
-    .authenticate()
-    .then(() => console.log('Connect to db'))
-    .catch((err) => {
-        console.log(err)
-    })
-
 app.get('/', async (req: Request, res: Response) => {
     try {
         const users = await User.findAll()
@@ -28,7 +26,8 @@ app.get('/', async (req: Request, res: Response) => {
         console.log(error)
     }
 })
-const PORT = process.env.PORT
+app.use('/auth', Auth)
+const PORT = process.env.PORT || 5001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
