@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import { User } from '../models/User'
 import bcrypt from 'bcryptjs'
 import toAuthJWT from '../utils/toAuthJWT'
+import passport from 'passport'
 const router = express.Router()
 router.post('/register', async (req: Request, res: Response) => {
     const { email, name, surname, isOwner, contactNumber, password, confirmPassword } = req.body
