@@ -1,7 +1,7 @@
 import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
 import { Room } from './Room'
-interface HotelInstances extends Sequelize.Model {
+export interface HotelInstances extends Sequelize.Model {
     id: number
     hotelName: string
     roomNumber: number

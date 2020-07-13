@@ -2,7 +2,7 @@ import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
 import { Hotel } from './Hotel'
 import { Room } from './Room'
-interface UserInstances extends Sequelize.Model {
+export interface UserInstances extends Sequelize.Model {
     id: number
     email: string
     name: string
