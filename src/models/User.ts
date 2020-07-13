@@ -1,15 +1,16 @@
-import { sequelize } from '.';
-import * as Sequelize from 'sequelize';
-import { Hotel } from './Hotel';
+import { sequelize } from '.'
+import * as Sequelize from 'sequelize'
+import { Hotel } from './Hotel'
+import { Room } from './Room'
 interface UserInstances extends Sequelize.Model {
-    id: number;
-    email: string;
-    name: string;
-    surname: string;
-    isOwner: boolean;
-    confirmed: boolean;
-    contactNumber: number;
-    password: string;
+    id: number
+    email: string
+    name: string
+    surname: string
+    isOwner: boolean
+    confirmed: boolean
+    contactNumber: number
+    password: string
 }
 export const User = sequelize.define<UserInstances>('user', {
     id: {
@@ -47,4 +48,12 @@ export const User = sequelize.define<UserInstances>('user', {
         type: Sequelize.STRING,
         allowNull: false,
     },
-});
+})
+User.hasMany(Hotel, {
+    foreignKey: 'userId',
+})
+Hotel.belongsTo(User)
+User.hasMany(Room, {
+    foreignKey: 'userId',
+})
+Room.belongsTo(User)
