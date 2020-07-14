@@ -2,30 +2,24 @@ import express, { Request, Response, NextFunction } from 'express'
 import { User } from '../models/User'
 import bcrypt from 'bcryptjs'
 import toAuthJWT from '../utils/toAuthJWT'
+import { validateTelephoneNumber, validateEmail } from '../utils/Validation'
 import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber'
 import HttpException from '../utils/httpExceptions'
 const router = express.Router()
 const phoneUtil = PhoneNumberUtil.getInstance()
 router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
     const { email, name, surname, isOwner, contactNumber, password, confirmPassword, iso2 } = req.body
-    const emailValidation = new RegExp(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    )
 
     if (!email || !name || !surname || !contactNumber || !password || !iso2)
         return next(new HttpException(400, 'Fill all gaps'))
 
-    const number = phoneUtil.parseAndKeepRawInput(contactNumber, iso2)
-
-    if (!emailValidation.test(email)) return next(new HttpException(400, 'Invalid email'))
+    if (!validateEmail(email)) return next(new HttpException(400, 'Invalid email'))
 
     if (password.length < 8) return next(new HttpException(400, 'Password is too short'))
 
     if (confirmPassword !== password) return next(new HttpException(400, 'Passwords are not identical'))
 
-    if (!phoneUtil.isPossibleNumber(number) || !phoneUtil.isValidNumber(number))
-        return next(new HttpException(400, 'Phone number is not valid'))
-
+    if (!validateTelephoneNumber(contactNumber, iso2)) return next(new HttpException(400, 'Number is not valid'))
     try {
         const user = await User.findOne({ where: { email } })
         if (user) return next(new HttpException(400, 'User already exists'))
@@ -35,12 +29,15 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
             name,
             surname,
             isOwner,
-            contactNumber: phoneUtil.format(number, PhoneNumberFormat.E164),
+            contactNumber: phoneUtil.format(
+                phoneUtil.parseAndKeepRawInput(contactNumber, iso2),
+                PhoneNumberFormat.E164,
+            ),
             password: hashedPassword,
         })
         res.status(200).json({ message: 'User has been created successfully' })
     } catch (error) {
-        next(next(new HttpException(500, 'An error occured')))
+        return next(new HttpException(500, 'An error occured'))
     }
 })
 router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
