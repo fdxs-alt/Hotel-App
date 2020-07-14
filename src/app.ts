@@ -7,6 +7,7 @@ import dotenv from 'dotenv'
 import Auth from './routes/AuthRoutes'
 import passport from 'passport'
 import strategy from './utils/passport'
+import { handleErrors, notFound } from './utils/ErrorHandling'
 dotenv.config({ path: './.env' })
 // initializing express app
 const app: express.Application = express()
@@ -22,6 +23,7 @@ app.use(cors())
 app.use(helmet())
 passport.use(strategy)
 app.use(passport.initialize())
+
 app.get('/', async (req: Request, res: Response) => {
     try {
         const users = await User.findAll()
@@ -31,6 +33,9 @@ app.get('/', async (req: Request, res: Response) => {
     }
 })
 app.use('/auth', Auth)
+app.use(notFound)
+app.use(handleErrors)
+
 const PORT = process.env.PORT || 5001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
