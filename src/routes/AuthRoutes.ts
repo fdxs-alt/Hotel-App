@@ -2,21 +2,28 @@ import express, { Request, Response } from 'express'
 import { User } from '../models/User'
 import bcrypt from 'bcryptjs'
 import toAuthJWT from '../utils/toAuthJWT'
-import passport from 'passport'
+import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber'
 const router = express.Router()
+const phoneUtil = PhoneNumberUtil.getInstance()
 router.post('/register', async (req: Request, res: Response) => {
-    const { email, name, surname, isOwner, contactNumber, password, confirmPassword } = req.body
+    const { email, name, surname, isOwner, contactNumber, password, confirmPassword, iso2 } = req.body
     const emailValidation = new RegExp(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     )
 
-    if (!email || !name || !surname || !contactNumber || !password)
+    if (!email || !name || !surname || !contactNumber || !password || !iso2)
         return res.status(400).json({ error: 'Fill all gaps' })
+
+    const number = phoneUtil.parseAndKeepRawInput(contactNumber, iso2)
+
     if (!emailValidation.test(email)) return res.status(400).json({ error: 'Invalid email' })
 
     if (password.length < 8) return res.status(400).json({ error: 'Password is too short' })
+
     if (confirmPassword !== password) return res.status(400).json({ error: 'Passwords are not identical' })
-    if (contactNumber.length !== 9) return res.status(400).json({ error: 'Contact number is wrong' })
+
+    if (!phoneUtil.isPossibleNumber(number) || !phoneUtil.isValidNumber(number))
+        return res.status(400).json({ error: 'Phone number is not valid' })
 
     try {
         const user = await User.findOne({ where: { email } })
@@ -27,7 +34,7 @@ router.post('/register', async (req: Request, res: Response) => {
             name,
             surname,
             isOwner,
-            contactNumber,
+            contactNumber: phoneUtil.format(number, PhoneNumberFormat.E164),
             password: hashedPassword,
         })
         res.status(200).json({ message: 'User has been created successfully' })
