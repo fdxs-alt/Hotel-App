@@ -28,7 +28,7 @@ export const Hotel = sequelize.define<HotelInstances>('hotel', {
         allowNull: false,
     },
     accountNumber: {
-        type: Sequelize.SMALLINT,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
     },
@@ -41,7 +41,7 @@ export const Hotel = sequelize.define<HotelInstances>('hotel', {
         allowNull: false,
     },
     contactNumber: {
-        type: Sequelize.SMALLINT,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
     },
