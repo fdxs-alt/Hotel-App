@@ -21,6 +21,8 @@ export const Room = sequelize.define<RoomInstances>(
         },
         roomNumber: {
             type: Sequelize.SMALLINT,
+            allowNull: false,
+            unique: true,
         },
         howManyDays: {
             type: Sequelize.SMALLINT,
@@ -35,6 +37,7 @@ export const Room = sequelize.define<RoomInstances>(
         },
         isReserved: {
             type: Sequelize.BOOLEAN,
+            defaultValue: false,
         },
         dateOfReservation: {
             type: Sequelize.DATE,

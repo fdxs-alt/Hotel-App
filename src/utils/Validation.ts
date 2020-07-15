@@ -12,6 +12,6 @@ export const validateEmail = (email: string): boolean => {
     return emailValidator.test(email)
 }
 export const validateAccountNumber = (accountNumber: string): boolean => {
-    const accountNumberValidator = new RegExp(/^[0-9]{4}-[0-9]{4}-[0-9]{2}-[0-9]{10}$/)
+    const accountNumberValidator = new RegExp(/[0-9]{4}[0-9]{4}[0-9]{2}[0-9]{10}/)
     return accountNumberValidator.test(accountNumber)
 }

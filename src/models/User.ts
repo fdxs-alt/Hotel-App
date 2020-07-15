@@ -40,7 +40,7 @@ export const User = sequelize.define<UserInstances>('user', {
         defaultValue: false,
     },
     contactNumber: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false,
     },

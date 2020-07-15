@@ -37,6 +37,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
         })
         res.status(200).json({ message: 'User has been created successfully' })
     } catch (error) {
+        console.log(error)
         return next(new HttpException(500, 'An error occured'))
     }
 })
@@ -55,6 +56,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
             data: toAuthJWT(user),
         })
     } catch (error) {
+        console.log(error)
         return next(new HttpException(500, 'An error occured'))
     }
 })
