@@ -53,5 +53,5 @@ User.hasMany(Hotel, {
     foreignKey: 'userId',
 })
 Hotel.belongsTo(User)
-User.belongsToMany(Reservation, { through: 'UserReservation', timestamps: false })
-Reservation.belongsToMany(User, { through: 'UserReservation', timestamps: false })
+User.hasMany(Reservation, { foreignKey: 'userId' })
+Reservation.belongsTo(User)
