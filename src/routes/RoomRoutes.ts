@@ -28,10 +28,12 @@ router.post(
     passport.authenticate('jwt', { session: false }),
     async (req: Request, res: Response, next: NextFunction) => {
         const { hotelId } = req.params
-        const { roomNumber, costPerNight, capacity } = req.body
-        if (!roomNumber || !costPerNight || !capacity) return next(new HttpException(400, 'Fill all required gaps'))
+        const { roomNumber, costPerNight, capacity, numberOfBeds } = req.body
+        if (!roomNumber || !costPerNight || !capacity || !numberOfBeds)
+            return next(new HttpException(400, 'Fill all required gaps'))
         if (capacity > 1000) return next(new HttpException(400, 'Capacity is too big for the room'))
         if (roomNumber > 10000) return next(new HttpException(400, 'Room number is too big'))
+        if (numberOfBeds > 10) return next(new HttpException(400, 'Bed number is too big'))
         try {
             const hotel = await Hotel.findByPk(hotelId)
             if (!hotel) return next(new HttpException(400, "Can't verify hotel"))
@@ -41,6 +43,7 @@ router.post(
                 roomNumber,
                 costPerNight,
                 capacity,
+                numberOfBeds,
                 hotelId,
             })
             res.status(200).json({ message: 'Room created succesffuly', data: newRoom })

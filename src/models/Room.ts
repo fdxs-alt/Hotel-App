@@ -1,6 +1,6 @@
 import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
-
+import { Reservation } from './Reservation'
 export interface RoomInstances extends Sequelize.Model {
     id: number
     roomNumber: number
@@ -24,9 +24,6 @@ export const Room = sequelize.define<RoomInstances>(
             allowNull: false,
             unique: true,
         },
-        howManyDays: {
-            type: Sequelize.SMALLINT,
-        },
         costPerNight: {
             type: Sequelize.INTEGER,
             allowNull: false,
@@ -35,18 +32,14 @@ export const Room = sequelize.define<RoomInstances>(
             type: Sequelize.SMALLINT,
             allowNull: false,
         },
-        isReserved: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false,
-        },
-        dateOfReservation: {
-            type: Sequelize.DATE,
-        },
-        dateOfReservationExpiration: {
-            type: Sequelize.DATE,
+        numberOfBeds: {
+            type: Sequelize.SMALLINT,
+            allowNull: false,
         },
     },
     {
         timestamps: false,
     },
 )
+Room.hasMany(Reservation, { foreignKey: 'roomId' })
+Reservation.belongsTo(Room)

@@ -7,6 +7,7 @@ import dotenv from 'dotenv'
 import Auth from './routes/AuthRoutes'
 import Hotel from './routes/HotelRoutes'
 import Room from './routes/RoomRoutes'
+import Reservation from './routes/ReservationRoutes'
 import passport from 'passport'
 import strategy from './utils/passport'
 import { handleErrors, notFound } from './utils/ErrorHandling'
@@ -37,6 +38,7 @@ app.get('/', async (req: Request, res: Response) => {
 app.use('/auth', Auth)
 app.use('/hotels', Hotel)
 app.use('/rooms', Room)
+app.use('/reservation', Reservation)
 app.use(notFound)
 app.use(handleErrors)
 
