@@ -16,11 +16,11 @@ export const Reservation = sequelize.define<ReservationInstances>(
             primaryKey: true,
         },
         fromData: {
-            type: Sequelize.DATE,
+            type: Sequelize.DATEONLY,
             allowNull: false,
         },
         toData: {
-            type: Sequelize.DATE,
+            type: Sequelize.DATEONLY,
             allowNull: false,
         },
         howManyDays: {
