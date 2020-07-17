@@ -63,10 +63,11 @@ router.post(
         try {
             const user = await User.findByPk(userId)
             if (!user) return next(new HttpException(400, "Can't verify user"))
-            const validateHotel = Hotel.findAll({
-                where: { [Op.or]: [hotelName, accountNumber, contactEmail, contactNumber] },
+            const validateHotel = await Hotel.findAll({
+                where: { [Op.or]: [{ hotelName }, { accountNumber }, { contactEmail }, { contactNumber }] },
             })
             if (validateHotel) return next(new HttpException(400, 'Hotel with given cridentials already exists'))
+            console.log(validateHotel)
             const newHotel = await Hotel.create({
                 hotelName,
                 roomNumber,

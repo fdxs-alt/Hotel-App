@@ -4,10 +4,8 @@ import { Reservation } from './Reservation'
 export interface RoomInstances extends Sequelize.Model {
     id: number
     roomNumber: number
-    isReserved: boolean
-    howManyDays: number
-    dateOfReservation: Date
-    dateOfReservationExpiration: Date
+    description: string
+    numberOfBeds: number
     costPerNight: number
     capacity: number
 }
@@ -23,6 +21,10 @@ export const Room = sequelize.define<RoomInstances>(
             type: Sequelize.SMALLINT,
             allowNull: false,
             unique: true,
+        },
+        description: {
+            type: Sequelize.TEXT,
+            allowNull: false,
         },
         costPerNight: {
             type: Sequelize.INTEGER,

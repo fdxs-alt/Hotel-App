@@ -3,6 +3,8 @@ import { Hotel } from '../models/Hotel'
 import { Room } from '../models/Room'
 import HttpException from '../utils/httpExceptions'
 import passport from 'passport'
+import { Op } from 'sequelize'
+
 const router = express.Router()
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
@@ -28,8 +30,8 @@ router.post(
     passport.authenticate('jwt', { session: false }),
     async (req: Request, res: Response, next: NextFunction) => {
         const { hotelId } = req.params
-        const { roomNumber, costPerNight, capacity, numberOfBeds } = req.body
-        if (!roomNumber || !costPerNight || !capacity || !numberOfBeds)
+        const { roomNumber, costPerNight, capacity, numberOfBeds, description } = req.body
+        if (!roomNumber || !costPerNight || !capacity || !numberOfBeds || !description)
             return next(new HttpException(400, 'Fill all required gaps'))
         if (capacity > 1000) return next(new HttpException(400, 'Capacity is too big for the room'))
         if (roomNumber > 10000) return next(new HttpException(400, 'Room number is too big'))
@@ -41,6 +43,7 @@ router.post(
             if (chceckIfRoomExists) return next(new HttpException(400, 'Such a room already exists'))
             const newRoom = await Room.create({
                 roomNumber,
+                description,
                 costPerNight,
                 capacity,
                 numberOfBeds,
@@ -52,4 +55,22 @@ router.post(
         }
     },
 )
+router.get('/specific', async (req: Request, res: Response, next: NextFunction) => {
+    const { cost, capacity, numberOfBeds } = req.body
+    try {
+        const rooms = await Room.findAll({
+            where: {
+                capacity,
+                costPerNight: {
+                    [Op.lte]: cost,
+                },
+                numberOfBeds,
+            },
+        })
+        if (!rooms) next(new HttpException(400, "Can't find such a room"))
+        return res.status(200).json(rooms)
+    } catch (error) {
+        next(new HttpException(500, 'An error occured'))
+    }
+})
 export default router
