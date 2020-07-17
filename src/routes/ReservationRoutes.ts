@@ -45,7 +45,3 @@ router.post(
     },
 )
 export default router
-
-//[Op.or]: { fromData: { [Op.gte]: fData } },
-//fromData: { [Op.lte]: tData },
-//[Op.or]: { toData: { [Op.gte]: fData } },
