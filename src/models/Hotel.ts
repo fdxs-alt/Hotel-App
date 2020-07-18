@@ -2,6 +2,7 @@ import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
 import { Room } from './Room'
 import { Reservation } from './Reservation'
+import { Conversation } from './Conversation'
 export interface HotelInstances extends Sequelize.Model {
     id: number
     hotelName: string
@@ -62,3 +63,5 @@ Hotel.hasMany(Room, {
 Room.belongsTo(Hotel)
 Hotel.hasMany(Reservation, { foreignKey: 'hotelId' })
 Reservation.belongsTo(Hotel)
+Hotel.hasMany(Conversation, { foreignKey: 'hotelId' })
+Conversation.hasMany(Hotel)

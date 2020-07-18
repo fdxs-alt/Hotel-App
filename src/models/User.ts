@@ -2,6 +2,8 @@ import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
 import { Hotel } from './Hotel'
 import { Reservation } from './Reservation'
+import { Conversation } from './Conversation'
+
 export interface UserInstances extends Sequelize.Model {
     id: number
     email: string
@@ -55,3 +57,5 @@ User.hasMany(Hotel, {
 Hotel.belongsTo(User)
 User.hasMany(Reservation, { foreignKey: 'userId' })
 Reservation.belongsTo(User)
+User.hasMany(Conversation, { foreignKey: 'userId' })
+Conversation.belongsTo(User)
