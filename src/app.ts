@@ -8,6 +8,7 @@ import Auth from './routes/AuthRoutes'
 import Hotel from './routes/HotelRoutes'
 import Room from './routes/RoomRoutes'
 import Reservation from './routes/ReservationRoutes'
+import UserRoutes from './routes/UserRoutes'
 import passport from 'passport'
 import strategy from './utils/passport'
 import { handleErrors, notFound } from './utils/ErrorHandling'
@@ -35,13 +36,16 @@ app.get('/', async (req: Request, res: Response) => {
         console.log(error)
     }
 })
+// Routes
 app.use('/auth', Auth)
 app.use('/hotels', Hotel)
 app.use('/rooms', Room)
 app.use('/reservation', Reservation)
+app.use('/user', UserRoutes)
+// Error handler
 app.use(notFound)
 app.use(handleErrors)
-
+// seting up server
 const PORT = process.env.PORT || 5001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)

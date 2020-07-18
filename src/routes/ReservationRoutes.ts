@@ -16,8 +16,8 @@ router.post(
         const today = moment().format('YYYY-MM-DD')
         const fData = moment(dateFrom).format('YYYY-MM-DD')
         const tData = moment(dateFrom).add(howManyDays, 'days').format('YYYY-MM-DD')
-        if (tData < today || fData < today || tData < fData)
-            return next(new HttpException(500, 'Given dates are not correct'))
+        //if (tData < today || fData < today || tData < fData)
+        // return next(new HttpException(500, 'Given dates are not correct'))
         try {
             const reservation = await Reservation.findOne({
                 where: {
@@ -68,9 +68,9 @@ router.get(
         try {
             const myReservation = await Reservation.findAll({ where: { userId } })
             if (myReservation.length === 0) return next(new HttpException(400, "You don't have any reservation yet"))
-            myReservation.forEach((reservation) => {
+            myReservation.forEach(async (reservation) => {
                 if (reservation.toData.toString() < moment().format('YYYY-MM-DD')) reservation.expired = true
-                reservation.save()
+                await reservation.save()
             })
             return res.status(200).json(myReservation)
         } catch (error) {
@@ -85,9 +85,9 @@ router.get(
         try {
             const allReservations = await Reservation.findAll({})
             if (allReservations.length === 0) return next(new HttpException(400, 'There are not any reservations yet'))
-            allReservations.forEach((reservation) => {
+            allReservations.forEach(async (reservation) => {
                 if (reservation.toData.toString() < moment().format('YYYY-MM-DD')) reservation.expired = true
-                reservation.save()
+                await reservation.save()
             })
 
             return res.status(200).json(allReservations)
