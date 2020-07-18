@@ -25,7 +25,6 @@ export const Messages = sequelize.define<MessagesInstance>(
         },
         time: {
             type: Sequelize.DATEONLY,
-            defaultValue: moment().format('MMMM Do YYYY, h:mm:ss a'),
         },
     },
     { timestamps: false },

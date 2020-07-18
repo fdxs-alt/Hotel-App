@@ -21,7 +21,6 @@ export const Conversation = sequelize.define<ConversationInstances>(
         },
         date: {
             type: Sequelize.DATEONLY,
-            defaultValue: moment().format('YYYY-MM-DD'),
         },
     },
     {
