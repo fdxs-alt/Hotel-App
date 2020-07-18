@@ -1,7 +1,6 @@
 import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
 import { Messages } from './Messages'
-import moment from 'moment'
 export interface ConversationInstances extends Sequelize.Model {
     id: number
     subject: string
@@ -21,6 +20,7 @@ export const Conversation = sequelize.define<ConversationInstances>(
         },
         date: {
             type: Sequelize.DATEONLY,
+            allowNull: false,
         },
     },
     {
