@@ -6,6 +6,7 @@ export interface ReservationInstances extends Sequelize.Model {
     toData: Date
     howManyDays: number
     entireCost: number
+    expired: boolean
 }
 export const Reservation = sequelize.define<ReservationInstances>(
     'reservation',
@@ -30,6 +31,10 @@ export const Reservation = sequelize.define<ReservationInstances>(
         entireCost: {
             type: Sequelize.INTEGER,
             allowNull: false,
+        },
+        expired: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false,
         },
     },
     {

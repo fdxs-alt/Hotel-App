@@ -55,8 +55,9 @@ router.post(
         }
     },
 )
-router.get('/specific', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/specific', async (req: Request, res: Response, next: NextFunction) => {
     const { cost, capacity, numberOfBeds } = req.body
+
     try {
         const rooms = await Room.findAll({
             where: {
@@ -67,7 +68,7 @@ router.get('/specific', async (req: Request, res: Response, next: NextFunction) 
                 numberOfBeds,
             },
         })
-        if (!rooms) next(new HttpException(400, "Can't find such a room"))
+        if (rooms.length === 0) return next(new HttpException(400, "Can't find such a room"))
         return res.status(200).json(rooms)
     } catch (error) {
         next(new HttpException(500, 'An error occured'))
