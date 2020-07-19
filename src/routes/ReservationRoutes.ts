@@ -16,8 +16,8 @@ router.post(
         const today = moment().format('YYYY-MM-DD')
         const fData = moment(dateFrom).format('YYYY-MM-DD')
         const tData = moment(dateFrom).add(howManyDays, 'days').format('YYYY-MM-DD')
-        //if (tData < today || fData < today || tData < fData)
-        // return next(new HttpException(500, 'Given dates are not correct'))
+        if (tData < today || fData < today || tData < fData)
+            return next(new HttpException(500, 'Given dates are not correct'))
         try {
             const reservation = await Reservation.findOne({
                 where: {
@@ -79,12 +79,13 @@ router.get(
     },
 )
 router.get(
-    '/allReservations',
+    '/allReservations/:hotelId',
     passport.authenticate('jwt', { session: false }),
     validateIsHotelOwner,
     async (req: Request, res: Response, next: NextFunction) => {
+        const { hotelId } = req.params
         try {
-            const allReservations = await Reservation.findAll({})
+            const allReservations = await Reservation.findAll({ where: { hotelId } })
             if (allReservations.length === 0) return next(new HttpException(400, 'There are not any reservations yet'))
             allReservations.forEach(async (reservation) => {
                 if (reservation.toData.toString() < moment().format('YYYY-MM-DD')) reservation.expired = true

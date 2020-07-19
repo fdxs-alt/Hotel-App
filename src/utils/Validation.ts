@@ -29,7 +29,7 @@ export const validateIsHotelOwner = async (req: Request, res: Response, next: Ne
         const sub = (decoded as any).sub
         const user = await User.findByPk(sub)
         if (!user) return next(new HttpException(401, 'User unauthorized'))
-        if (!user.isOwner) return next(new HttpException(401, 'User unauthorized'))
+        if (!user.isOwner) return next(new HttpException(401, 'You are not owner of the hotel'))
         next()
     } catch (error) {
         return res.status(401).json({ message: 'Token is not valid' })
