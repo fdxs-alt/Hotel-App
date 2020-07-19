@@ -12,6 +12,8 @@ import UserRoutes from './routes/UserRoutes'
 import passport from 'passport'
 import strategy from './utils/passport'
 import { handleErrors, notFound } from './utils/ErrorHandling'
+
+
 dotenv.config({ path: './.env' })
 // initializing express app
 const app: express.Application = express()
@@ -23,6 +25,7 @@ sequelize
     .catch((err) => console.log(err))
 // MIDDLEWARE
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 app.use(helmet())
 passport.use(strategy)
