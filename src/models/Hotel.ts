@@ -2,6 +2,7 @@ import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
 import { Room } from './Room'
 import { Reservation } from './Reservation'
+import { Images } from './Images'
 import { Conversation } from './Conversation'
 export interface HotelInstances extends Sequelize.Model {
     id: number
@@ -56,6 +57,9 @@ export const Hotel = sequelize.define<HotelInstances>('hotel', {
         type: Sequelize.SMALLINT,
         allowNull: false,
     },
+    mainImage: {
+        type: Sequelize.BLOB('long'),
+    },
 })
 Hotel.hasMany(Room, {
     foreignKey: 'hotelId',
@@ -65,3 +69,5 @@ Hotel.hasMany(Reservation, { foreignKey: 'hotelId' })
 Reservation.belongsTo(Hotel)
 Hotel.hasMany(Conversation, { foreignKey: 'hotelId' })
 Conversation.belongsTo(Hotel)
+Hotel.hasMany(Images, { foreignKey: 'hotelId' })
+Images.belongsTo(Hotel)
