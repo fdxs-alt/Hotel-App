@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 import { Hotel } from '../models/Hotel'
 import { Room } from '../models/Room'
+import { validateIsHotelOwner } from '../utils/Validation'
 import HttpException from '../utils/httpExceptions'
 import passport from 'passport'
 import { Op } from 'sequelize'
@@ -28,6 +29,7 @@ router.get('/:roomId', async (req: Request, res: Response, next: NextFunction) =
 router.post(
     '/create/:hotelId',
     passport.authenticate('jwt', { session: false }),
+    validateIsHotelOwner,
     async (req: Request, res: Response, next: NextFunction) => {
         const { hotelId } = req.params
         const { roomNumber, costPerNight, capacity, numberOfBeds, description } = req.body

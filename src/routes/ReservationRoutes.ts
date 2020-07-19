@@ -4,7 +4,7 @@ import { Reservation } from '../models/Reservation'
 import { Op } from 'sequelize'
 import HttpException from '../utils/httpExceptions'
 import moment from 'moment'
-
+import { validateIsHotelOwner } from '../utils/Validation'
 const router = express.Router()
 
 router.post(
@@ -81,6 +81,7 @@ router.get(
 router.get(
     '/allReservations',
     passport.authenticate('jwt', { session: false }),
+    validateIsHotelOwner,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const allReservations = await Reservation.findAll({})

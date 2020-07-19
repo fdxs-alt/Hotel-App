@@ -3,9 +3,15 @@ import { Hotel } from '../models/Hotel'
 import { User } from '../models/User'
 import HttpException from '../utils/httpExceptions'
 import passport from 'passport'
-import { validateEmail, validateTelephoneNumber, validateAccountNumber } from '../utils/Validation'
+import {
+    validateEmail,
+    validateTelephoneNumber,
+    validateAccountNumber,
+    validateIsHotelOwner,
+} from '../utils/Validation'
 import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber'
 import { Op } from 'sequelize'
+
 const router = express.Router()
 const phoneUtil = PhoneNumberUtil.getInstance()
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
@@ -29,6 +35,7 @@ router.get('/:hotelName', async (req: Request, res: Response, next: NextFunction
 router.post(
     '/create/:userId',
     passport.authenticate('jwt', { session: false }),
+    validateIsHotelOwner,
     async (req: Request, res: Response, next: NextFunction) => {
         const { userId } = req.params
         const {
