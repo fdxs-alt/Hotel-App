@@ -79,8 +79,9 @@ router.post(
             const validateHotel = await Hotel.findAll({
                 where: { [Op.or]: [{ hotelName }, { accountNumber }, { contactEmail }, { contactNumber }] },
             })
-            if (validateHotel) return next(new HttpException(400, 'Hotel with given cridentials already exists'))
-            console.log(validateHotel)
+            if (validateHotel.length !== 0)
+                return next(new HttpException(400, 'Hotel with given cridentials already exists'))
+           
             const newHotel = await Hotel.create({
                 hotelName,
                 roomNumber,
@@ -96,9 +97,9 @@ router.post(
                 userId,
                 type: req.file.mimetype,
                 name: req.file.originalname,
-                data: fs.readFileSync(path.resolve() + '/images/' + req.file.filename),
+                data: fs.readFileSync(path.resolve() + '\\Nan\\images\\' + req.file.filename),
             })
-            await fs.writeFileSync(path.resolve() + '/images/temp/' + newHotel.name, newHotel.data)
+            await fs.writeFileSync(path.resolve() + '\\NaN\\images\\temp\\' + newHotel.name, newHotel.data)
             return res.status(200).json({ message: 'Hotel created succussfully', data: newHotel })
         } catch (error) {
             console.log(error)

@@ -10,7 +10,7 @@ const imageFilter = (req: Request, file: any, callback: CallableFunction) => {
 }
 const storage = multer.diskStorage({
     destination: (req, file, callback: CallableFunction) => {
-        callback(null, +path.resolve() + '/images/')
+        callback(null, +path.resolve() + '\\images\\')
     },
     filename: (req, file, callback) => {
         callback(null, `${Date.now()}-${file.originalname}`)

@@ -12,7 +12,7 @@ import UserRoutes from './routes/UserRoutes'
 import passport from 'passport'
 import strategy from './utils/passport'
 import { handleErrors, notFound } from './utils/ErrorHandling'
-
+import path from 'path'
 
 dotenv.config({ path: './.env' })
 // initializing express app
@@ -25,7 +25,7 @@ sequelize
     .catch((err) => console.log(err))
 // MIDDLEWARE
 app.use(express.json())
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 app.use(helmet())
 passport.use(strategy)
@@ -51,5 +51,5 @@ app.use(handleErrors)
 // seting up server
 const PORT = process.env.PORT || 5001
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`, path.resolve() + '\\images\\')
 })
