@@ -12,7 +12,7 @@ import UserRoutes from './routes/UserRoutes'
 import passport from 'passport'
 import strategy from './utils/passport'
 import { handleErrors, notFound } from './utils/ErrorHandling'
-import path from 'path'
+
 
 dotenv.config({ path: './.env' })
 // initializing express app
@@ -40,6 +40,7 @@ app.get('/', async (req: Request, res: Response) => {
     }
 })
 // Routes
+
 app.use('/auth', Auth)
 app.use('/hotels', Hotel)
 app.use('/rooms', Room)
@@ -47,6 +48,7 @@ app.use('/reservation', Reservation)
 app.use('/user', UserRoutes)
 // Error handler
 app.use(notFound)
+
 app.use(handleErrors)
 // seting up server
 const PORT = process.env.PORT || 5001
