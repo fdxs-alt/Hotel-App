@@ -4,7 +4,6 @@ import { User } from '../models/User'
 import HttpException from '../utils/httpExceptions'
 import passport from 'passport'
 import fs from 'fs'
-import path from 'path'
 import Upload, { dir } from '../utils/ImagesMiddleware'
 import {
     validateEmail,
@@ -14,6 +13,7 @@ import {
 } from '../utils/Validation'
 import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber'
 import { Op } from 'sequelize'
+const upload = Upload.single('file') 
 
 const router = express.Router()
 const phoneUtil = PhoneNumberUtil.getInstance()
@@ -39,72 +39,75 @@ router.post(
     '/create/:userId',
     passport.authenticate('jwt', { session: false }),
     validateIsHotelOwner,
-    Upload.single('file'),
-    async (req: Request, res: Response, next: NextFunction) => {
-        const { userId } = req.params
-
-        const {
-            hotelName,
-            roomNumber,
-            accountNumber,
-            city,
-            street,
-            contactNumber,
-            contactEmail,
-            stars,
-            iso2,
-        } = req.body
-        if (
-            !hotelName ||
-            !roomNumber ||
-            !accountNumber ||
-            !city ||
-            !street ||
-            !contactNumber ||
-            !contactEmail ||
-            !stars ||
-            !iso2
-        )
-            return next(new HttpException(400, 'Fill all gaps'))
-        if (req.file === undefined) return next(new HttpException(400, 'Select a image file'))
-        if (!validateEmail(contactEmail)) return next(new HttpException(400, 'Invalid email'))
-        if (!validateAccountNumber(accountNumber)) return next(new HttpException(400, 'Invalid account number'))
-        if (!validateTelephoneNumber(contactNumber, iso2)) return next(new HttpException(400, 'Invalid contact number'))
-        if (hotelName.length > 100 || hotelName.length < 3) return next(new HttpException(400, 'Invalid hotel name'))
-        if (roomNumber > 1000 || roomNumber < 10) return next(new HttpException(400, 'Invalid room number'))
-        if (stars < 0 || stars > 5) return next(new HttpException(400, 'Invalid stars number'))
-        try {
-            const user = await User.findByPk(userId)
-            if (!user) return next(new HttpException(400, "Can't verify user"))
-            const validateHotel = await Hotel.findAll({
-                where: { [Op.or]: [{ hotelName }, { accountNumber }, { contactEmail }, { contactNumber }] },
-            })
-            if (validateHotel.length !== 0)
-                return next(new HttpException(400, 'Hotel with given cridentials already exists'))
-
-            const newHotel = await Hotel.create({
+    (req: Request, res: Response, next: NextFunction) => {
+        upload(req, res, async (err: any) => {
+            if (err) return next(new HttpException(400, err))
+            const { userId } = req.params
+            const {
                 hotelName,
                 roomNumber,
                 accountNumber,
                 city,
                 street,
-                contactNumber: phoneUtil.format(
-                    phoneUtil.parseAndKeepRawInput(contactNumber, iso2),
-                    PhoneNumberFormat.E164,
-                ),
+                contactNumber,
                 contactEmail,
                 stars,
-                userId,
-                type: req.file.mimetype,
-                name: req.file.originalname,
-                data: fs.readFileSync(dir + req.file.filename),
-            })
-            await fs.writeFileSync(dir + 'temp/' + newHotel.name, newHotel.data)
-            return res.status(200).json({ message: 'Hotel created succussfully', data: newHotel })
-        } catch (error) {
-            console.log(error)
-            return next(new HttpException(500, 'Something went wrong'))
-        }
+                iso2,
+            } = req.body
+            if (
+                !hotelName ||
+                !roomNumber ||
+                !accountNumber ||
+                !city ||
+                !street ||
+                !contactNumber ||
+                !contactEmail ||
+                !stars ||
+                !iso2
+            )
+                return next(new HttpException(400, 'Fill all gaps'))
+            if (req.file === undefined) return next(new HttpException(400, 'Select a image file'))
+            if (!validateEmail(contactEmail)) return next(new HttpException(400, 'Invalid email'))
+            if (!validateAccountNumber(accountNumber)) return next(new HttpException(400, 'Invalid account number'))
+            if (!validateTelephoneNumber(contactNumber, iso2))
+                return next(new HttpException(400, 'Invalid contact number'))
+            if (hotelName.length > 100 || hotelName.length < 3)
+                return next(new HttpException(400, 'Invalid hotel name'))
+            if (roomNumber > 1000 || roomNumber < 10) return next(new HttpException(400, 'Invalid room number'))
+            if (stars < 0 || stars > 5) return next(new HttpException(400, 'Invalid stars number'))
+            try {
+                const user = await User.findByPk(userId)
+                if (!user) return next(new HttpException(400, "Can't verify user"))
+                const validateHotel = await Hotel.findAll({
+                    where: { [Op.or]: [{ hotelName }, { accountNumber }, { contactEmail }, { contactNumber }] },
+                })
+                if (validateHotel.length !== 0)
+                    return next(new HttpException(400, 'Hotel with given cridentials already exists'))
+
+                const newHotel = await Hotel.create({
+                    hotelName,
+                    roomNumber,
+                    accountNumber,
+                    city,
+                    street,
+                    contactNumber: phoneUtil.format(
+                        phoneUtil.parseAndKeepRawInput(contactNumber, iso2),
+                        PhoneNumberFormat.E164,
+                    ),
+                    contactEmail,
+                    stars,
+                    userId,
+                    type: req.file.mimetype,
+                    name: req.file.originalname,
+                    data: fs.readFileSync(dir + req.file.filename),
+                })
+                await fs.writeFileSync(dir + 'temp/' + newHotel.name, newHotel.data)
+                return res.status(200).json({ message: 'Hotel created succussfully', data: newHotel })
+            } catch (error) {
+                console.log(error)
+                return next(new HttpException(500, 'Something went wrong'))
+            }
+        })
     },
 )
 
