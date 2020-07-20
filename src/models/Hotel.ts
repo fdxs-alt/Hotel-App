@@ -14,6 +14,9 @@ export interface HotelInstances extends Sequelize.Model {
     contactNumber: number
     contactEmail: string
     stars: number
+    type: string
+    name: string
+    data: string
 }
 export const Hotel = sequelize.define<HotelInstances>('hotel', {
     id: {
@@ -57,7 +60,14 @@ export const Hotel = sequelize.define<HotelInstances>('hotel', {
         type: Sequelize.SMALLINT,
         allowNull: false,
     },
-    mainImage: {
+    type: {
+        type: Sequelize.STRING,
+    },
+    name: {
+        type: Sequelize.STRING,
+    },
+
+    data: {
         type: Sequelize.BLOB('long'),
     },
 })
