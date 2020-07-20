@@ -8,8 +8,8 @@ const imageFilter = (req: Request, file: any, callback: CallableFunction) => {
         callback('Upload only images', false)
     }
 }
-const storage = multer.diskStorage({
-    destination: (req, file, callback: CallableFunction) => {
+let storage = multer.diskStorage({
+    destination: (req: Request, file, callback: CallableFunction) => {
         callback(null, +path.resolve() + '\\images\\')
     },
     filename: (req, file, callback) => {
