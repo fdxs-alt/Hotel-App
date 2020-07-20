@@ -5,7 +5,7 @@ import HttpException from '../utils/httpExceptions'
 import passport from 'passport'
 import fs from 'fs'
 import path from 'path'
-import Upload from '../utils/ImagesMiddleware'
+import Upload, { dir } from '../utils/ImagesMiddleware'
 import {
     validateEmail,
     validateTelephoneNumber,
@@ -81,7 +81,7 @@ router.post(
             })
             if (validateHotel.length !== 0)
                 return next(new HttpException(400, 'Hotel with given cridentials already exists'))
-           
+
             const newHotel = await Hotel.create({
                 hotelName,
                 roomNumber,
@@ -97,9 +97,9 @@ router.post(
                 userId,
                 type: req.file.mimetype,
                 name: req.file.originalname,
-                data: fs.readFileSync(path.resolve() + '\\Nan\\images\\' + req.file.filename),
+                data: fs.readFileSync(dir + req.file.filename),
             })
-            await fs.writeFileSync(path.resolve() + '\\NaN\\images\\temp\\' + newHotel.name, newHotel.data)
+            await fs.writeFileSync(dir + 'temp/' + newHotel.name, newHotel.data)
             return res.status(200).json({ message: 'Hotel created succussfully', data: newHotel })
         } catch (error) {
             console.log(error)
