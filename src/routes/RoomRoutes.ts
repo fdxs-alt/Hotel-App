@@ -5,9 +5,11 @@ import { validateIsHotelOwner } from '../utils/Validation'
 import HttpException from '../utils/httpExceptions'
 import passport from 'passport'
 import { Op } from 'sequelize'
-
+import fs from 'fs'
+import Upload, { dir } from '../utils/ImagesMiddleware'
+import { Images } from '../models/Images'
 const router = express.Router()
-
+const uploads = Upload.array('photo', 10)
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const rooms = await Room.findAll({})
@@ -57,6 +59,46 @@ router.post(
         }
     },
 )
+router.post(
+    '/upload/:hotelId/:roomId',
+    passport.authenticate('jwt', { session: false }),
+    validateIsHotelOwner,
+    (req: Request, res: Response, next: NextFunction) => {
+        uploads(req, res, async (err: string) => {
+            const { hotelId, roomId } = req.params
+            if (err) return next(new HttpException(400, err))
+            if (req.files.length === 0) return next(new HttpException(400, 'You need to upload files'))
+            try {
+                const isRoom = await Room.findByPk(roomId)
+                if (!isRoom) return next(new HttpException(400, "Can't find such a room"))
+                ;(req.files as any).forEach(async (file: Express.Multer.File) => {
+                    const image = await Images.create({
+                        name: file.originalname,
+                        type: file.mimetype,
+                        data: fs.readFileSync(dir + file.filename),
+                        roomId,
+                        hotelId,
+                    })
+                    await fs.writeFileSync(dir + 'temp/' + image.name, image.data)
+                    return res.status(200).json({ message: 'Files has been sent successfully' })
+                })
+            } catch (error) {
+                console.log(error)
+                return next(new HttpException(500, 'An error occured'))
+            }
+        })
+    },
+)
+router.get('/allPhotos/:hotelId/:roomId', async (req: Request, res: Response, next: NextFunction) => {
+    const { hotelId, roomId } = req.params
+    try {
+        const roomImages = await Images.findAll({ where: { hotelId, roomId } })
+        if (roomImages.length === 0) return res.status(200).json({ message: 'There are no photos yet' })
+        return res.status(200).json(roomImages)
+    } catch (error) {
+        return res.status(500).json({ message: 'There was an error' })
+    }
+})
 router.post('/specific', async (req: Request, res: Response, next: NextFunction) => {
     const { cost, capacity, numberOfBeds } = req.body
 

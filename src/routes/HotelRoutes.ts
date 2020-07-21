@@ -111,6 +111,17 @@ router.post(
         })
     },
 )
+router.get('/allPhotos/:hotelId', async (req: Request, res: Response, next: NextFunction) => {
+    const { hotelId } = req.params
+    try {
+        const hotelImages = await Images.findAll({ where: { hotelId, roomId: null } })
+        if (hotelImages.length === 0) return res.status(200).json({ message: 'There are no photos yet' })
+        return res.status(200).json(hotelImages)
+    } catch (error) {
+        return res.status(500).json({ message: 'There was an error' })
+    }
+})
+
 router.post(
     '/upload/:hotelId',
     passport.authenticate('jwt', { session: false }),
@@ -138,6 +149,20 @@ router.post(
                 return next(new HttpException(500, 'An error occured'))
             }
         })
+    },
+)
+router.delete(
+    '/deleteImage/:imageId',
+    passport.authenticate('jwt', { session: false }),
+    validateIsHotelOwner,
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { imageId } = req.params
+        try {
+            await Images.destroy({ where: { id: imageId } })
+            res.status(200).json({ message: 'Image has been deleted succesfully' })
+        } catch (error) {
+            return next(new HttpException(500, 'An error occured'))
+        }
     },
 )
 export default router
