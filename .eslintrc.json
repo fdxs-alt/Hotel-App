@@ -16,6 +16,6 @@
     },
     "plugins": ["@typescript-eslint"],
     "rules": {
-        "no-non-null-assertion": false
+        "no-non-null-assertion": 0
     }
 }

@@ -44,6 +44,7 @@ export const Room = sequelize.define<RoomInstances>(
         timestamps: false,
     },
 )
+// Relations
 Room.hasMany(Reservation, { foreignKey: 'roomId' })
 Reservation.belongsTo(Room)
 Room.hasMany(Images, { foreignKey: 'roomId' })

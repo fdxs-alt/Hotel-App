@@ -9,10 +9,10 @@ import Hotel from './routes/HotelRoutes'
 import Room from './routes/RoomRoutes'
 import Reservation from './routes/ReservationRoutes'
 import UserRoutes from './routes/UserRoutes'
+import Opinions from './routes/OpinionsRoutes'
 import passport from 'passport'
 import strategy from './utils/passport'
 import { handleErrors, notFound } from './utils/ErrorHandling'
-
 
 dotenv.config({ path: './.env' })
 // initializing express app
@@ -46,6 +46,7 @@ app.use('/hotels', Hotel)
 app.use('/rooms', Room)
 app.use('/reservation', Reservation)
 app.use('/user', UserRoutes)
+app.use('/opinions', Opinions)
 // Error handler
 app.use(notFound)
 
