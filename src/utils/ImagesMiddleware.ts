@@ -5,10 +5,10 @@ import { Request } from 'express'
 export const dir = path.join(__dirname, '../../images/')
 const imageFilter = (req: Request, file: any, callback: CallableFunction) => {
     if (file.mimetype.startsWith('image')) {
-       
         callback(null, true)
+    } else if (file.size > 1024 * 1024 * 8) {
+        callback('Size of file is too big', false)
     } else {
-        console.log(file.mimetype)
         callback('Upload only images', false)
     }
 }

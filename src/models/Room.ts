@@ -1,6 +1,7 @@
 import { sequelize } from '.'
 import * as Sequelize from 'sequelize'
 import { Reservation } from './Reservation'
+import { Images } from './Images'
 export interface RoomInstances extends Sequelize.Model {
     id: number
     roomNumber: number
@@ -45,3 +46,5 @@ export const Room = sequelize.define<RoomInstances>(
 )
 Room.hasMany(Reservation, { foreignKey: 'roomId' })
 Reservation.belongsTo(Room)
+Room.hasMany(Images, { foreignKey: 'roomId' })
+Images.belongsTo(Room)

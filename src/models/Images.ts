@@ -1,12 +1,12 @@
 import * as Sequelize from 'sequelize'
 import { sequelize } from '.'
-export interface ImagesInterface extends Sequelize.Model {
+export interface ImagesInstances extends Sequelize.Model {
     id: number
     type: string
     name:string
     data:string
 }
-export const Images = sequelize.define(
+export const Images = sequelize.define<ImagesInstances>(
     'images',
     {
         id: {
