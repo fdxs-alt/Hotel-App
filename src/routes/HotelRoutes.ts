@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 import { Hotel } from '../models/Hotel'
 import { User } from '../models/User'
+import { Images } from '../models/Images'
 import HttpException from '../utils/httpExceptions'
 import passport from 'passport'
 import fs from 'fs'
@@ -13,8 +14,8 @@ import {
 } from '../utils/Validation'
 import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber'
 import { Op } from 'sequelize'
-const upload = Upload.single('file') 
-
+const upload = Upload.single('file')
+const uploads = Upload.array('photo', 10)
 const router = express.Router()
 const phoneUtil = PhoneNumberUtil.getInstance()
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +41,7 @@ router.post(
     passport.authenticate('jwt', { session: false }),
     validateIsHotelOwner,
     (req: Request, res: Response, next: NextFunction) => {
-        upload(req, res, async (err: any) => {
+        upload(req, res, async (err: string) => {
             if (err) return next(new HttpException(400, err))
             const { userId } = req.params
             const {
@@ -110,5 +111,33 @@ router.post(
         })
     },
 )
+router.post(
+    '/upload/:hotelId',
+    passport.authenticate('jwt', { session: false }),
+    validateIsHotelOwner,
+    (req: Request, res: Response, next: NextFunction) => {
+        uploads(req, res, async (err: string) => {
+            const { hotelId } = req.params
+            if (err) return next(new HttpException(400, err))
+            if (req.files.length === 0) return next(new HttpException(400, 'You need to upload files'))
 
+            try {
+                const isHotel = Hotel.findByPk(hotelId)
+                if (!isHotel) return next(new HttpException(400, "Can't find hotel"))
+                ;(req.files as any).forEach(async (file: Express.Multer.File) => {
+                    const image = await Images.create({
+                        name: file.originalname,
+                        type: file.mimetype,
+                        data: fs.readFileSync(dir + file.filename),
+                        hotelId,
+                    })
+                    await fs.writeFileSync(dir + 'temp/' + image.name, image.data)
+                })
+                return res.status(200).json({ message: 'Files has been sent successfully' })
+            } catch (error) {
+                return next(new HttpException(500, 'An error occured'))
+            }
+        })
+    },
+)
 export default router
