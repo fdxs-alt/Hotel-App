@@ -81,4 +81,17 @@ router.post(
         }
     },
 )
+router.delete(
+    '/deleteConversation/:conversationId',
+    passport.authenticate('jwt', { session: false }),
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { conversatopnId } = req.params
+        try {
+            await Conversation.destroy({ where: { id: conversatopnId } })
+            return res.status(200).json({ message: 'Conversation has been deleted succesfully' })
+        } catch (error) {
+            return next(new HttpException(500, 'An error occured'))
+        }
+    },
+)
 export default router

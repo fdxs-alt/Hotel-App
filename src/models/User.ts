@@ -52,9 +52,7 @@ export const User = sequelize.define<UserInstances>('user', {
         allowNull: false,
     },
 })
-User.hasMany(Hotel, {
-    foreignKey: 'userId',
-})
+User.hasMany(Hotel, { foreignKey: 'userId' })
 Hotel.belongsTo(User)
 User.hasMany(Reservation, { foreignKey: 'userId' })
 Reservation.belongsTo(User)

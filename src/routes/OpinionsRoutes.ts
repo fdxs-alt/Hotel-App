@@ -38,4 +38,17 @@ router.post(
         }
     },
 )
+router.delete(
+    '/deleteOpinion/:opinionId',
+    passport.authenticate('jwt', { session: false }),
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { opinionId } = req.params
+        try {
+            await Opinion.destroy({ where: { id: opinionId } })
+            return res.status(200).json({ message: 'Opinion has been deleted succesfully' })
+        } catch (error) {
+            return next(new HttpException(500, 'An error occured'))
+        }
+    },
+)
 export default router

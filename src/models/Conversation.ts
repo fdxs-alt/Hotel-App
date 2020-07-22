@@ -28,5 +28,5 @@ export const Conversation = sequelize.define<ConversationInstances>(
     },
 )
 // Relations
-Conversation.hasMany(Messages, { foreignKey: 'conversationId' })
+Conversation.hasMany(Messages, { foreignKey: 'conversationId', onDelete: 'CASCADE' })
 Messages.belongsTo(Conversation)

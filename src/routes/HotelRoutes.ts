@@ -118,7 +118,7 @@ router.get('/allPhotos/:hotelId', async (req: Request, res: Response, next: Next
         if (hotelImages.length === 0) return res.status(200).json({ message: 'There are no photos yet' })
         return res.status(200).json(hotelImages)
     } catch (error) {
-        return res.status(500).json({ message: 'There was an error' })
+        return next(new HttpException(500, 'Something went wrong'))
     }
 })
 
@@ -134,7 +134,9 @@ router.post(
 
             try {
                 const isHotel = Hotel.findByPk(hotelId)
-                if (!isHotel) return next(new HttpException(400, "Can't find hotel"))
+                if (!isHotel)
+                    return next(new HttpException(400, "Can't find hotel"))
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ;(req.files as any).forEach(async (file: Express.Multer.File) => {
                     const image = await Images.create({
                         name: file.originalname,
@@ -165,4 +167,5 @@ router.delete(
         }
     },
 )
+
 export default router
