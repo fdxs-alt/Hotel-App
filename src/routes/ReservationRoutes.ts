@@ -4,18 +4,15 @@ import { Reservation } from '../models/Reservation'
 import { Op } from 'sequelize'
 import HttpException from '../utils/httpExceptions'
 import moment from 'moment'
-import { validateIsHotelOwner } from '../utils/Validation'
+import { validateIsHotelOwner, getDates } from '../utils/Validation'
 const router = express.Router()
-
 router.post(
     '/book/:userId/:hotelId/:roomId',
     passport.authenticate('jwt', { session: false }),
     async (req: Request, res: Response, next: NextFunction) => {
         const { roomId, hotelId, userId } = req.params
         const { howManyDays, entireCost, dateFrom } = req.body
-        const today = moment().format('YYYY-MM-DD')
-        const fData = moment(dateFrom).format('YYYY-MM-DD')
-        const tData = moment(dateFrom).add(howManyDays, 'days').format('YYYY-MM-DD')
+        const [today, fData, tData] = getDates(dateFrom, howManyDays)
         if (tData < today || fData < today || tData < fData)
             return next(new HttpException(500, 'Given dates are not correct'))
         try {

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { secret } from '../config.json'
 import { User } from '../models/User'
 import HttpException from './httpExceptions'
+import moment from 'moment'
 export const validateTelephoneNumber = (contactNumber: string, iso2: string): boolean => {
     const phoneUtil = PhoneNumberUtil.getInstance()
     const number = phoneUtil.parseAndKeepRawInput(contactNumber, iso2)
@@ -20,7 +21,7 @@ export const validateAccountNumber = (accountNumber: string): boolean => {
     const accountNumberValidator = new RegExp(/[0-9]{4}[0-9]{4}[0-9]{2}[0-9]{10}/)
     return accountNumberValidator.test(accountNumber)
 }
-export const validateIsHotelOwner = async (req: Request, res: Response, next: NextFunction) => {
+export const validateIsHotelOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { authorization } = req.headers
     if (!authorization) return next(new HttpException(401, 'User unauthorized'))
     const token = authorization.split(' ')[1]
@@ -32,6 +33,12 @@ export const validateIsHotelOwner = async (req: Request, res: Response, next: Ne
         if (!user.isOwner) return next(new HttpException(401, 'You are not owner of the hotel'))
         next()
     } catch (error) {
-        return res.status(401).json({ message: 'Token is not valid' })
+        return next(new HttpException(401, 'User unauthorized'))
     }
+}
+export const getDates = (dateFrom: string, howManyDays: number): string[] => {
+    const today = moment().format('YYYY-MM-DD')
+    const fData = moment(dateFrom).format('YYYY-MM-DD')
+    const tData = moment(dateFrom).add(howManyDays, 'days').format('YYYY-MM-DD')
+    return [today, fData, tData]
 }
