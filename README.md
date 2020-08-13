@@ -1,1 +1,1 @@
-#### Application which allows to book rooms, creating hotels, contacting hotel owner and adding opinions, with usage of Sequlize as ORM, Express, TypeScript
+#### Application which allows to book rooms, creating hotels, adding room photos, contacting hotel owner and adding opinions, with usage of Sequlize as ORM, Express, TypeScript
